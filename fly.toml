@@ -1,0 +1,8 @@
+app = "okx-monitor-paulo"
+primary_region = "gru"
+
+[build]
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "256mb"
