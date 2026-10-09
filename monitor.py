@@ -77,7 +77,7 @@ def resumo_pares(client, cache, taker):
     return pares
 
 
-def texto_status(pares):
+def texto_status(pares, lucro_min):
     linhas = [f"📊 <b>Status</b> ({agora()})"]
     for inst, d in sorted(pares.items(), key=lambda x: x[1]["resultado"]):
         nome = inst.replace("-USDT-SWAP", "")
@@ -86,7 +86,11 @@ def texto_status(pares):
         elif d["alvo"] <= 0:
             alvo = "sem preço possível"
         else:
+            alerta = d["mark"] - (d["resultado"] - lucro_min) / d["liquido"]
             alvo = f"zero a zero em {d['alvo']:.6g} ({d['dist']:+.1f}%)"
+            if alerta > 0:
+                alvo += (f" | {lucro_min:+g} em {alerta:.6g} "
+                         f"({(alerta / d['mark'] - 1) * 100:+.1f}%)")
         linhas.append(f"<b>{nome}</b> {d['mark']:.6g} | "
                       f"{d['resultado']:+.2f} USDT | {alvo}")
     return "\n".join(linhas)
@@ -137,7 +141,7 @@ def main():
             alertados &= set(pares)   # esquece pares que foram fechados
 
             if time.time() - ultimo_status >= status_horas * 3600:
-                telegram(texto_status(pares))
+                telegram(texto_status(pares, lucro_min))
                 ultimo_status = time.time()
 
             resumo = " | ".join(f"{i.split('-')[0]} {d['resultado']:+.2f}"
