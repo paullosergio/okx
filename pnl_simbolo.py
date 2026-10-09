@@ -53,7 +53,14 @@ print(f"  TOTAL  {int(tot['n']):>3} exec ({int(tot['maker'])} maker)  volume {to
       f"= {tot['pnl'] + tot['taxa'] + tot['funding']:+.2f}")
 
 # Posições fechadas: a OKX lança o realizedPnl da vida inteira da posição no dia em que ela fecha
-hist = c._request("GET", "/api/v5/account/positions-history", {"instType": "SWAP", "instId": inst, "limit": 100}, privado=True)
+hist, after = [], None  # paginado por uTime; a OKX guarda ~3 meses
+while True:
+    d = c._request("GET", "/api/v5/account/positions-history",
+                   {"instType": "SWAP", "instId": inst, "limit": 100, "after": after}, privado=True)
+    hist += d
+    if len(d) < 100:
+        break
+    after = d[-1]["uTime"]
 print(f"\nHistórico de posições ({len(hist)}):")
 for h in hist:
     abre = datetime.fromtimestamp(int(h["cTime"]) / 1000, TZ)
