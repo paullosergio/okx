@@ -62,3 +62,15 @@ for h in hist:
           f"entrada {h['openAvgPx']}  saída {h['closeAvgPx']}  máx {float(h['openMaxPos']) * ct:g}  "
           f"pnl {float(h['pnl']):+8.2f}  taxa {float(h['fee']):+7.2f}  funding {float(h['fundingFee']):+6.2f}  "
           f"realizado {float(h['realizedPnl']):+8.2f}")
+print(f"  SOMA do histórico fechado: {sum(float(h['realizedPnl']) for h in hist):+.2f}  "
+      f"(desde {datetime.fromtimestamp(int(hist[-1]['cTime']) / 1000, TZ):%d/%m/%y})" if hist else "")
+
+# Posições abertas: o que o monitor soma (upl + realizedPnl)
+print("\nPosições abertas:")
+for p in c.posicoes("SWAP"):
+    if p["instId"] != inst or float(p["pos"] or 0) == 0:
+        continue
+    abre = datetime.fromtimestamp(int(p["cTime"]) / 1000, TZ)
+    print(f"  {p['posSide']:<5} aberta {abre:%d/%m/%y %H:%M}  qtd {float(p['pos']) * ct:g}  entrada {p['avgPx']}  "
+          f"marca {p['markPx']}  upl {float(p['upl'] or 0):+8.2f}  | realizado {float(p['realizedPnl'] or 0):+8.2f} "
+          f"(pnl {float(p['pnl'] or 0):+.2f}  taxa {float(p['fee'] or 0):+.2f}  funding {float(p['fundingFee'] or 0):+.2f})")
