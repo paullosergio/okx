@@ -1,6 +1,6 @@
 # OKX Monitor
 
-Monitora suas posições abertas na OKX e manda um alerta no Telegram quando um par chega no **zero a zero** (resultado ≥ `LUCRO_MINIMO`, já descontando a taxa para fechar tudo a mercado).
+Monitora suas posições abertas na OKX e manda um alerta no Telegram quando um par chega no **zero a zero** (resultado ≥ `LUCRO_MINIMO`, somando o PnL aberto e o já realizado em fechamentos parciais, e descontando a taxa para fechar tudo a mercado).
 
 **Só faz leitura:** não abre nem fecha nenhuma posição.
 

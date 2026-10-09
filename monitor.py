@@ -62,7 +62,9 @@ def resumo_pares(client, cache, taker):
                                     "bruto": 0.0, "pnl": 0.0})
         d["liquido"] += sinal * moedas
         d["bruto"] += moedas
-        d["pnl"] += float(p["upl"] or 0)
+        # realizedPnl: o que a posição já realizou em fechamentos parciais,
+        # já com taxas e funding — sem isso o "zero a zero" ignora perdas passadas
+        d["pnl"] += float(p["upl"] or 0) + float(p.get("realizedPnl") or 0)
 
     for d in pares.values():
         d["taxa"] = d["bruto"] * d["mark"] * taker      # fechar tudo a mercado
